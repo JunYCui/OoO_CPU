@@ -1,0 +1,11 @@
+*.*
+*
+!abstract-machine/*
+!am-kernels/*
+!nemu/*
+!npc/*
+!riscv-arch-test-am/*
+!.gitignore
+!*.cpp
+!*.sv
+!*.v
