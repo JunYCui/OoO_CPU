@@ -1,2 +1,52 @@
-.*
+# ======= 全局规则 =======
+# 默认忽略所有文件（通过后续 ! 规则保留需要的部分）
+*
+
+# ======= 保留目录结构 =======
+# 保留项目核心目录（不忽略目录本身）
+!/.vscode/
+!/abstract-machine/
+!/am-kernels/
+!/csrc/
+!/dv/
+!/nemu/
+!/riscv-arch-test-am/
+!/rtl/
+!/script/
+!/sdc/
+
+# ======= 特殊保留文件类型 =======
+# 保留源代码和关键文件类型（需放在目录规则后）
+!*.sv
+!*.v
+!*.h
+!*.cpp
+!*.c
+!*.tcl
+!*.py
+!*.mk
+!Makefile
 !.gitignore
+
+# ======= 例外忽略规则 =======
+# 强制忽略以下内容（优先级最高）
+# 1. 忽略所有构建生成目录
+/build/
+/dv/build/
+/work/
+/nemu/build/
+
+# 2. 忽略日志和临时文件
+*.log
+*.vcd
+*.fsdb
+*.bak
+*.tmp
+
+# 3. IDE和编辑器临时文件
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*~
