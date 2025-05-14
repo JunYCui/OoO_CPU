@@ -4,7 +4,6 @@
 
 # ======= 保留目录结构 =======
 # 保留项目核心目录（不忽略目录本身）
-!/.vscode/
 !/abstract-machine/
 !/am-kernels/
 !/csrc/
@@ -36,17 +35,4 @@
 /work/
 /nemu/build/
 
-# 2. 忽略日志和临时文件
-*.log
-*.vcd
-*.fsdb
-*.bak
-*.tmp
 
-# 3. IDE和编辑器临时文件
-.vscode/*
-!.vscode/settings.json
-!.vscode/extensions.json
-.idea/
-*.swp
-*~
