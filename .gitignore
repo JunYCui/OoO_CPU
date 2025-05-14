@@ -5,14 +5,22 @@
 # ======= 保留目录结构 =======
 # 保留项目核心目录（不忽略目录本身）
 !/abstract-machine/
+!/abstract-machine/** 
 !/am-kernels/
+!/am-kernels/** 
 !/csrc/
-!/dv/
+!/csrc/** 
+!/tb/
 !/nemu/
+!/nemu/** 
 !/riscv-arch-test-am/
+!/riscv-arch-test-am/** 
 !/rtl/
+!/rtl/** 
 !/script/
+!/script/** 
 !/sdc/
+!/sdc/** 
 
 # ======= 特殊保留文件类型 =======
 # 保留源代码和关键文件类型（需放在目录规则后）

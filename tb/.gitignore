@@ -1,0 +1,11 @@
+*
+*.*
+!makefile
+!/data/
+!/vsrc/
+!*.py
+!*.hex
+!*.sv
+!.gitignore
+wave/
+build/
