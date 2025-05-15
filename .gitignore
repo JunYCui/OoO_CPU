@@ -35,6 +35,7 @@
 !*.tcl
 !*.py
 !*.mk
+!*.zip
 !Makefile
 !.gitignore
 
