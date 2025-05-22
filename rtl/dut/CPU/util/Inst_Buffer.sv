@@ -25,115 +25,76 @@
 //****************************************************************************************//
 
 module Inst_Buffer #(
-    parameter DATA_WIDTH = 32,
-    parameter ADDR_WIDTH = 32,
-    parameter Depth      = 32,
-    parameter Fetch_NUM  = 4
+    parameter                           DATA_WIDTH                 = 32    ,
+    parameter                           ADDR_WIDTH                 = 32    ,
+    parameter                           Depth                      = 8     
 ) (
-    input clk,
-    input rst,
-    input clr,
+    input                               clk                        ,
+    input                               rst                        ,
+    input                               clr                        ,
 
-    input [DATA_WIDTH-1:0] inst_i[Fetch_NUM-1:0],
-    input [DATA_WIDTH-1:0] pc_i[Fetch_NUM-1:0],
-    input [Fetch_NUM-1:0] pred_res_i,
+    input              [DATA_WIDTH-1: 0]        inst_i                     ,
+    input              [DATA_WIDTH-1: 0]        pc_i                       ,
+    input                               pred_res_i                 ,
 
-    input [Fetch_NUM-1:0] inst_wen,
+    input                               inst_wen                   ,
+    input                               inst_ren                   ,
 
+    output             [DATA_WIDTH-1: 0]        inst1_o                    ,
+    output             [ADDR_WIDTH-1: 0]        pc1_o                      ,
+    output                              pred_res1_o                ,
 
-    input  [           3:0] inst_ren,
-    output [DATA_WIDTH-1:0] inst1_o,
-    output [DATA_WIDTH-1:0] inst2_o,
-    output [DATA_WIDTH-1:0] inst3_o,
-    output [DATA_WIDTH-1:0] inst4_o,
-
-    output [ADDR_WIDTH-1:0] pc1_o,
-    output [ADDR_WIDTH-1:0] pc2_o,
-    output [ADDR_WIDTH-1:0] pc3_o,
-    output [ADDR_WIDTH-1:0] pc4_o,
-
-    output pred_res1_o,
-    output pred_res2_o,
-    output pred_res3_o,
-    output pred_res4_o,
-
-    output reg [$clog2(Depth)-1:0] inst_count
+    output                              empty                      ,
+    output                              full                        
 );
 
-  reg  [      $clog2(Depth)-1:0] w_ptr;
-  reg  [      $clog2(Depth)-1:0] r_ptr;
-  reg  [         DATA_WIDTH-1:0] fifo         [Depth-1:0];
-  reg  [         ADDR_WIDTH-1:0] pc_fifo      [Depth-1:0];
-  reg                            pred_fifo    [Depth-1:0];
+    reg                [$clog2(Depth)-1: 0]        w_ptr                       ;
+    reg                [$clog2(Depth)-1: 0]        r_ptr                       ;
 
-  wire [$clog2(Fetch_NUM+1)-1:0] count_input;
-  wire [                    2:0] count_output;
-  genvar i;
-  generate
-    for (i = 0; i < Fetch_NUM; i = i + 1) begin
-      always @(posedge clk)
-        if (|inst_wen) begin
-          fifo[w_ptr+i] <= inst_wen[i] ? inst_i[i] : fifo[w_ptr+i];
-          pc_fifo[w_ptr+i] <= (inst_wen[i]) ? pc_i[i] : pc_fifo[w_ptr+i];
-          pred_fifo[w_ptr+i] <= (inst_wen[i]) ? pred_res_i[i] : pred_fifo[w_ptr+i];
+    reg                [DATA_WIDTH-1: 0]        fifo    [Depth-1:0]  ;
+    reg                [ADDR_WIDTH-1: 0]        pc_fifo [Depth-1:0]  ;
+    reg                                 pred_fifo[Depth-1:0]        ;
+    reg                [$clog2(Depth): 0]        inst_count                  ;
+
+
+      always @(posedge clk) begin
+          fifo[w_ptr] <= inst_wen ? inst_i: fifo[w_ptr];
+          pc_fifo[w_ptr] <= inst_wen ? pc_i: pc_fifo[w_ptr];
+          pred_fifo[w_ptr] <= inst_wen ? pred_res_i: pred_fifo[w_ptr];
         end
-    end
-  endgenerate
 
   always @(posedge clk) begin
     if (rst | clr) w_ptr <= 0;
-    else if (|inst_wen) begin
-      w_ptr <= w_ptr + count_input;
+    else if (inst_wen) begin
+      w_ptr <= w_ptr + 1;
     end
   end
 
   always @(posedge clk) begin
     if (rst | clr) r_ptr <= 0;
-    else if (|inst_ren) begin
-      r_ptr <= r_ptr + count_output;
+    else if (inst_ren) begin
+      r_ptr <= r_ptr + 1;
     end
   end
 
   always @(posedge clk) begin
     if (rst | clr) inst_count <= 0;
-    else if (|inst_wen || |inst_ren) inst_count <= inst_count + count_input - count_output;
+    else begin
+      if(inst_ren)
+        inst_count <= inst_count - 1;
+      if(inst_wen)
+        inst_count <= inst_count + 1;
+    end
   end
 
+    assign                              empty                       = (inst_count == 0);
+    assign                              full                        = (inst_count == Depth);
+    assign                              inst1_o                     = fifo[r_ptr];
+    assign                              pc1_o                       = pc_fifo[r_ptr];
+    assign                              pred_res1_o                 = pred_fifo[r_ptr];
 
 
-  assign inst1_o = fifo[r_ptr];
-  assign inst2_o = fifo[r_ptr+1];
-  assign inst3_o = fifo[r_ptr+2];
-  assign inst4_o = fifo[r_ptr+3];
-
-  assign pc1_o = pc_fifo[r_ptr];
-  assign pc2_o = pc_fifo[r_ptr+1];
-  assign pc3_o = pc_fifo[r_ptr+2];
-  assign pc4_o = pc_fifo[r_ptr+3];
-
-  assign pred_res1_o = pred_fifo[r_ptr];
-  assign pred_res2_o = pred_fifo[r_ptr+1];
-  assign pred_res3_o = pred_fifo[r_ptr+2];
-  assign pred_res4_o = pred_fifo[r_ptr+3];
-
-
-  count_ones #(
-      .DATA_WIDTH(Fetch_NUM)
-  ) u_count_ones (
-      .data_in  (inst_wen),
-      .count_out(count_input)
-  );
-
-
-
-  count_ones #(
-      .DATA_WIDTH(Fetch_NUM)
-  ) u1_count_ones (
-      .data_in  (inst_ren),
-      .count_out(count_output)
-  );
 
 
 
 endmodule
-
