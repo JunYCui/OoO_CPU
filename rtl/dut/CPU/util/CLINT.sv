@@ -26,7 +26,7 @@
 
 /* verilator lint_off UNUSEDSIGNAL */
 /* verilator lint_off UNDRIVEN */
-module ysyx_24100029_CLINT
+module CLINT
 (
     input                               reset                      ,
     input                               clock                      ,

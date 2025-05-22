@@ -17,14 +17,14 @@
 // Created date:           2025/01/24 15:21:55
 // mail      :             1354315077@qq.com 
 // Version:                V1.0
-// TEXT NAME:              ysyx_24100029_Xbar.v
-// PATH:                   ~/ysyx-workbench/npc/vsrc/CPU/tool/ysyx_24100029_Xbar.v
+// TEXT NAME:              Xbar.v
+// PATH:                   ~/ysyx-workbench/npc/vsrc/CPU/tool/Xbar.v
 // Descriptions:           
 //                         
 //----------------------------------------------------------------------------------------
 //****************************************************************************************//
 
-module ysyx_24100029_Xbar(
+module Xbar(
 
     input                                  reset                      ,
     input                                  clock                      ,
